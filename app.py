@@ -15,13 +15,13 @@ bot = telegram.Bot(token='7865008470:AAEEHlPkgjyvBcokSJaUhssA56_fheaDs2k')
 
 # Conexión a la base de datos PostgreSQL
 def get_db_connection():
-    conn = psycopg2.connect(
-        dbname=os.getenv('DB_NAME', 'tu_db'),
-        user=os.getenv('DB_USER', 'tu_usuario'),
-        password=os.getenv('DB_PASSWORD', 'tu_password'),
-        host=os.getenv('DB_HOST', 'localhost'),
-        sslmode='require'
-    )
+    # Leer la URL de la base de datos desde la variable de entorno
+    database_url = os.getenv('DATABASE_URL')
+    if not database_url:
+        raise RuntimeError('La variable de entorno DATABASE_URL no está configurada.')
+    
+    # Conectar usando la URI
+    conn = psycopg2.connect(database_url, sslmode='require')
     return conn
 
 # Crear la base de datos y las tablas si no existen
