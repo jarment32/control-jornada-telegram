@@ -52,7 +52,7 @@ def init_db():
 def enviar_mensaje_telegram(mensaje):
     try:
         # Enviar mensaje a tu canal o chat privado
-        bot.send_message(chat_id="@tu_canaltarget", text=mensaje)  # Reemplaza @tu_canaltarget por tu canal o ID
+        bot.send_message(chat_id="@jmptelecom_bot", text=mensaje)  # Reemplaza @tu_canaltarget por tu canal o ID
     except Exception as e:
         print(f"Error al enviar el mensaje de Telegram: {e}")
 
