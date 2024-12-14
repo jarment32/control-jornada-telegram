@@ -16,7 +16,10 @@ bot = telegram.Bot(token='7865008470:AAEEHlPkgjyvBcokSJaUhssA56_fheaDs2k')
 # Conexión a la base de datos PostgreSQL
 def get_db_connection():
     conn = psycopg2.connect(
-        dbname=os.getenv('https://control-jornada-telegram-c9f613f713c3.herokuapp.com/'),
+        dbname=os.getenv('DB_NAME', 'tu_db'),
+        user=os.getenv('DB_USER', 'tu_usuario'),
+        password=os.getenv('DB_PASSWORD', 'tu_password'),
+        host=os.getenv('DB_HOST', 'localhost'),
         sslmode='require'
     )
     return conn
@@ -24,7 +27,9 @@ def get_db_connection():
 # Crear la base de datos y las tablas si no existen
 def init_db():
     conn = get_db_connection()
-    conn.execute('''
+    cursor = conn.cursor()
+    
+    cursor.execute('''
     CREATE TABLE IF NOT EXISTS usuarios (
         id SERIAL PRIMARY KEY,
         nombre TEXT NOT NULL,
@@ -32,7 +37,7 @@ def init_db():
         contrasena TEXT NOT NULL
     )
     ''')
-    conn.execute('''
+    cursor.execute('''
     CREATE TABLE IF NOT EXISTS jornadas (
         id SERIAL PRIMARY KEY,
         usuario_id INTEGER,
@@ -43,6 +48,7 @@ def init_db():
     )
     ''')
     conn.commit()
+    cursor.close()
     conn.close()
 
 # Página de inicio
@@ -63,7 +69,8 @@ def registro():
         
         conn = get_db_connection()
         try:
-            conn.execute('INSERT INTO usuarios (nombre, correo, contrasena) VALUES (%s, %s, %s)', 
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO usuarios (nombre, correo, contrasena) VALUES (%s, %s, %s)', 
                          (nombre, correo, contrasena_hash))
             conn.commit()
             flash('Usuario registrado con éxito.', 'success')
@@ -83,12 +90,14 @@ def login():
         contrasena = request.form['contrasena']
         
         conn = get_db_connection()
-        user = conn.execute('SELECT * FROM usuarios WHERE correo = %s', (correo,)).fetchone()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM usuarios WHERE correo = %s', (correo,))
+        user = cursor.fetchone()
         conn.close()
         
-        if user and check_password_hash(user['contrasena'], contrasena):
-            session['usuario_id'] = user['id']
-            session['usuario_nombre'] = user['nombre']
+        if user and check_password_hash(user[3], contrasena):  # user[3] es la contraseña
+            session['usuario_id'] = user[0]  # user[0] es el id del usuario
+            session['usuario_nombre'] = user[1]  # user[1] es el nombre del usuario
             flash('Inicio de sesión exitoso.', 'success')
             return redirect(url_for('dashboard'))
         else:
@@ -111,8 +120,10 @@ def dashboard():
         return redirect(url_for('login'))
     
     conn = get_db_connection()
-    jornadas = conn.execute('SELECT * FROM jornadas WHERE usuario_id = %s ORDER BY fecha DESC', 
-                            (session['usuario_id'],)).fetchall()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM jornadas WHERE usuario_id = %s ORDER BY fecha DESC', 
+                            (session['usuario_id'],))
+    jornadas = cursor.fetchall()
     conn.close()
     return render_template('dashboard.html', jornadas=jornadas)
 
@@ -126,7 +137,8 @@ def entrada():
     fecha = datetime.now().strftime('%Y-%m-%d')
     
     conn = get_db_connection()
-    conn.execute('INSERT INTO jornadas (usuario_id, fecha, hora_entrada) VALUES (%s, %s, %s)', 
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO jornadas (usuario_id, fecha, hora_entrada) VALUES (%s, %s, %s)', 
                  (session['usuario_id'], fecha, hora_entrada))
     conn.commit()
     conn.close()
@@ -143,7 +155,8 @@ def salida(jornada_id):
     hora_salida = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
     conn = get_db_connection()
-    conn.execute('UPDATE jornadas SET hora_salida = %s WHERE id = %s AND usuario_id = %s', 
+    cursor = conn.cursor()
+    cursor.execute('UPDATE jornadas SET hora_salida = %s WHERE id = %s AND usuario_id = %s', 
                  (hora_salida, jornada_id, session['usuario_id']))
     conn.commit()
     conn.close()
@@ -161,6 +174,7 @@ def start():
     keyboard = InlineKeyboardMarkup([[button]])
 
     # Envía el mensaje al usuario a través del bot de Telegram
+    # Cambia 'chat_id' por el ID del chat o @username del grupo o usuario
     bot.send_message(
         chat_id='@jmptelecom_bot',  # Cambia esto con tu chat_id
         text="¡Bienvenido! Haz clic en el botón para abrir la Web App.",
