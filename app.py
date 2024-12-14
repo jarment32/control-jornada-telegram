@@ -11,7 +11,7 @@ app.secret_key = 'Valencia01'  # Cambia la clave secreta aquí
 # Conexión a la base de datos PostgreSQL
 def get_db_connection():
     conn = psycopg2.connect(
-        dbname=os.getenv('DATABASE_URL'),
+        dbname=os.getenv('https://control-jornada-telegram-c9f613f713c3.herokuapp.com/'),
         sslmode='require'
     )
     return conn
