@@ -164,22 +164,34 @@ def salida(jornada_id):
     flash('Hora de salida registrada.', 'success')
     return redirect(url_for('dashboard'))
 
+# Función para crear el teclado de inicio con botones
+def create_start_keyboard():
+    keyboard = [
+        [InlineKeyboardButton(text="Accede a la Web App", url="https://control-jornada-telegram-c9f613f713c3.herokuapp.com/")],
+        [InlineKeyboardButton(text="Ver Tutorial", url="https://www.ejemplo.com/tutorial")],
+        [InlineKeyboardButton(text="Ayuda", callback_data="help")]
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
 # Enviar mensaje con botón al iniciar bot
 @app.route('/start', methods=['GET', 'POST'])
 def start():
-    button = InlineKeyboardButton(
-        text="Ir a la Web App",
-        url="https://control-jornada-telegram-c9f613f713c3.herokuapp.com/"
+    # Enviar una imagen junto con el texto
+    bot.send_photo(
+        chat_id='@jmptelecom_bot',  # Cambia esto con tu chat_id
+        photo='https://www.example.com/your_image.png',  # Reemplaza con la URL de tu imagen
+        caption="¡Bienvenido a la Web App!"  # Puedes agregar un título aquí
     )
-    keyboard = InlineKeyboardMarkup([[button]])
 
-    # Envía el mensaje al usuario a través del bot de Telegram
-    # Cambia 'chat_id' por el ID del chat o @username del grupo o usuario
+    # Enviar un mensaje con los botones
     bot.send_message(
         chat_id='@jmptelecom_bot',  # Cambia esto con tu chat_id
-        text="¡Bienvenido! Haz clic en el botón para abrir la Web App.",
-        reply_markup=keyboard
+        text="<b>¡Bienvenido a la Web App!</b>\n\n"  # Usa HTML para formato en negrita
+        "Haz clic en uno de los botones a continuación para comenzar:",
+        parse_mode='HTML',  # Esto habilita el uso de HTML
+        reply_markup=create_start_keyboard()
     )
+
     return 'Web App link sent!'
 
 # Inicialización de la base de datos
