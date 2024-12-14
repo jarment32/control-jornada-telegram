@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Inicio</title>
-</head>
-<body>
-    <h1>Bienvenido a la Aplicación de Control de Jornada</h1>
-    <a href="{{ url_for('login') }}">Iniciar sesión</a><br>
-    <a href="{{ url_for('registro') }}">Registrarse</a>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Bienvenido al sistema de Control de Jornada</h2>
+<p>Por favor, regístrate o inicia sesión para continuar.</p>
+<a href="{{ url_for('registro') }}" class="btn-primary">Registrarse</a>
+<a href="{{ url_for('login') }}" class="btn-secondary">Iniciar sesión</a>
+{% endblock %}
