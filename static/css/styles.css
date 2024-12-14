@@ -1,0 +1,129 @@
+/* styles.css */
+
+/* Estilo general de la página */
+body {
+    background-color: #f4f4f9;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3 {
+    color: #333;
+    text-align: center;
+}
+
+/* Contenedor para centrar el contenido */
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+
+/* Flash messages */
+.flash-success {
+    color: green;
+    background-color: #e0ffe0;
+    border: 1px solid #4CAF50;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.flash-danger {
+    color: red;
+    background-color: #ffe0e0;
+    border: 1px solid #f44336;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.flash-info {
+    color: blue;
+    background-color: #e0f7ff;
+    border: 1px solid #2196F3;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Títulos */
+h1, h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Formulario de login y registro */
+.form-container {
+    max-width: 500px;
+    margin: auto;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-container input {
+    margin-bottom: 1rem;
+}
+
+.form-container label {
+    font-weight: bold;
+}
+
+/* Botones */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Sección de Dashboard */
+.dashboard-container {
+    margin-top: 20px;
+}
+
+.table {
+    margin-top: 20px;
+}
+
+.table th, .table td {
+    text-align: center;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    color: #343a40;
+}
+
+.table td {
+    background-color: #ffffff;
+}
+
+/* Ajuste en el header */
+header {
+    background-color: #343a40;
+    color: #ffffff;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
