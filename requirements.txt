@@ -1,5 +1,4 @@
-Flask==2.2.5
-Werkzeug==2.2.3
-psycopg2==2.9.6
-python-telegram-bot==20.0  # Agregar esta línea
+Flask
 gunicorn
+psycopg2-binary
+python-telegram-bot
