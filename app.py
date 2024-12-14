@@ -3,23 +3,20 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
-from telegram import Bot
+import telegram
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 # Configuración de la aplicación
 app = Flask(__name__)
 app.secret_key = 'Valencia01'  # Cambia la clave secreta aquí
 
-# Token del bot de Telegram (reemplaza con tu token)
-TELEGRAM_TOKEN = '7865008470:AAEEHlPkgjyvBcokSJaUhssA56_fheaDs2k'
-bot = Bot(token=TELEGRAM_TOKEN)
+# Usa tu token de BotFather
+bot = telegram.Bot(token='7865008470:AAEEHlPkgjyvBcokSJaUhssA56_fheaDs2k')
 
 # Conexión a la base de datos PostgreSQL
 def get_db_connection():
     conn = psycopg2.connect(
-        dbname=os.getenv('DB_NAME', 'tu_nombre_de_base_de_datos'),  # Cambia esto
-        user=os.getenv('DB_USER', 'tu_usuario_de_base_de_datos'),  # Cambia esto
-        password=os.getenv('DB_PASSWORD', 'tu_contraseña'),  # Cambia esto
-        host=os.getenv('DB_HOST', 'localhost'),
+        dbname=os.getenv('https://control-jornada-telegram-c9f613f713c3.herokuapp.com/'),
         sslmode='require'
     )
     return conn
@@ -48,14 +45,6 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Función para enviar mensaje al bot de Telegram
-def enviar_mensaje_telegram(mensaje):
-    try:
-        # Enviar mensaje a tu canal o chat privado
-        bot.send_message(chat_id="@jmptelecom_bot", text=mensaje)  # Reemplaza @tu_canaltarget por tu canal o ID
-    except Exception as e:
-        print(f"Error al enviar el mensaje de Telegram: {e}")
-
 # Página de inicio
 @app.route('/')
 def index():
@@ -78,11 +67,6 @@ def registro():
                          (nombre, correo, contrasena_hash))
             conn.commit()
             flash('Usuario registrado con éxito.', 'success')
-            
-            # Enviar mensaje al bot de Telegram cuando se registre un nuevo usuario
-            mensaje = f"Nuevo registro: {nombre} con correo {correo}"
-            enviar_mensaje_telegram(mensaje)
-            
             return redirect(url_for('index'))
         except psycopg2.IntegrityError:
             flash('El correo ya está registrado.', 'danger')
@@ -166,6 +150,23 @@ def salida(jornada_id):
     
     flash('Hora de salida registrada.', 'success')
     return redirect(url_for('dashboard'))
+
+# Enviar mensaje con botón al iniciar bot
+@app.route('/start', methods=['GET', 'POST'])
+def start():
+    button = InlineKeyboardButton(
+        text="Ir a la Web App",
+        url="https://control-jornada-telegram-c9f613f713c3.herokuapp.com/"
+    )
+    keyboard = InlineKeyboardMarkup([[button]])
+
+    # Envía el mensaje al usuario a través del bot de Telegram
+    bot.send_message(
+        chat_id='@jmptelecom_bot',  # Cambia esto con tu chat_id
+        text="¡Bienvenido! Haz clic en el botón para abrir la Web App.",
+        reply_markup=keyboard
+    )
+    return 'Web App link sent!'
 
 # Inicialización de la base de datos
 init_db()
