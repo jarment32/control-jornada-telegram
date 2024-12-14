@@ -1,34 +1,33 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
-</head>
-<body>
-    <h1>Bienvenido {{ session['usuario_nombre'] }}</h1>
-    <p><a href="{{ url_for('logout') }}">Cerrar sesión</a></p>
-    <h2>Mis jornadas</h2>
-    <table>
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Bienvenido, {{ session['usuario_nombre'] }}</h2>
+<p>Aquí puedes ver tus registros de entrada y salida:</p>
+
+<table class="table">
+    <thead>
         <tr>
             <th>Fecha</th>
-            <th>Hora de entrada</th>
-            <th>Hora de salida</th>
+            <th>Hora Entrada</th>
+            <th>Hora Salida</th>
             <th>Acciones</th>
         </tr>
+    </thead>
+    <tbody>
         {% for jornada in jornadas %}
         <tr>
-            <td>{{ jornada['fecha'] }}</td>
-            <td>{{ jornada['hora_entrada'] }}</td>
-            <td>{{ jornada['hora_salida'] }}</td>
+            <td>{{ jornada[2] }}</td>
+            <td>{{ jornada[3] }}</td>
+            <td>{{ jornada[4] or "No registrado" }}</td>
             <td>
-                {% if not jornada['hora_salida'] %}
-                    <form action="{{ url_for('salida', jornada_id=jornada['id']) }}" method="post">
-                        <button type="submit">Registrar salida</button>
+                {% if not jornada[4] %}
+                    <form action="{{ url_for('salida', jornada_id=jornada[0]) }}" method="POST">
+                        <button type="submit" class="btn-primary">Registrar Salida</button>
                     </form>
                 {% endif %}
             </td>
         </tr>
         {% endfor %}
-    </table>
-</body>
-</html>
+    </tbody>
+</table>
+{% endblock %}
